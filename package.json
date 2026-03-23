@@ -1,8 +1,4 @@
 {
-  "engines": {
-    "node": "18.x"
-  },
-  "dependencies": {
-    "ccxt": "latest"
-  }
+  "engines": { "node": "18.x" },
+  "dependencies": { "ccxt": "latest" }
 }
