@@ -30,7 +30,7 @@
         async function atualizar() {
             try {
                 // Chamamos a pasta /api que criamos antes
-                const r = await fetch("/api/index");
+                const r = await fetch("/api");
                 const d = await r.json();
                 
                 if (d.btc_price) {
