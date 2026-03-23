@@ -3,39 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Bot Dashboard</title>
+    <title>Crypto Monitor</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-900 text-white font-sans p-6">
-    <div class="max-w-md mx-auto bg-slate-800 rounded-3xl p-8 shadow-2xl border border-slate-700">
-        <h1 class="text-2xl font-bold mb-2 text-blue-400">CryptoMonitor v1.0</h1>
-        <p class="text-slate-400 text-sm mb-6">Status: <span class="text-green-400">● Live</span></p>
-        
-        <div class="bg-slate-900 rounded-2xl p-6 mb-6 text-center border border-slate-700">
-            <p class="text-slate-400 uppercase text-xs tracking-widest mb-2">Bitcoin (BTC/USD)</p>
-            <h2 id="preco" class="text-4xl font-black text-white">Carregando...</h2>
-            <p id="variacao" class="text-sm mt-2 font-medium">--</p>
-        </div>
-
-        <button onclick="atualizar()" class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-bold transition-all active:scale-95">
-            FORÇAR ATUALIZAÇÃO
-        </button>
-        
-        <p class="text-center text-[10px] text-slate-500 mt-6 uppercase tracking-tighter">Powered by Vercel Serverless</p>
+<body class="bg-black text-white flex items-center justify-center min-h-screen">
+    <div class="p-8 bg-zinc-900 rounded-3xl border border-zinc-800 shadow-2xl text-center w-80">
+        <h1 class="text-zinc-500 text-xs uppercase tracking-[0.2em] mb-4">Bitcoin Live</h1>
+        <div id="preco" class="text-4xl font-mono font-bold text-green-400 mb-2">$--.---</div>
+        <div id="status" class="text-[10px] text-zinc-600 uppercase">Sincronizando...</div>
     </div>
 
     <script>
         async function atualizar() {
-            const elPreco = document.getElementById("preco");
             try {
                 const res = await fetch("/api");
                 const data = await res.json();
-                elPreco.innerText = "$" + data.btc_price.toLocaleString();
+                document.getElementById("preco").innerText = "$" + data.btc_price.toLocaleString();
+                document.getElementById("status").innerText = "Última atualização: " + new Date().toLocaleTimeString();
             } catch (e) {
-                elPreco.innerText = "Erro na API";
+                document.getElementById("status").innerText = "Erro de conexão";
             }
         }
-        setInterval(atualizar, 10000); // Atualiza visualmente a cada 10 seg
+        setInterval(atualizar, 10000); // Atualiza a tela a cada 10 segundos
         atualizar();
     </script>
 </body>
