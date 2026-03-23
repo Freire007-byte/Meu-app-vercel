@@ -1,31 +1,44 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Monitor</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-black text-white flex items-center justify-center min-h-screen">
-    <div class="p-8 bg-zinc-900 rounded-3xl border border-zinc-800 shadow-2xl text-center w-80">
-        <h1 class="text-zinc-500 text-xs uppercase tracking-[0.2em] mb-4">Bitcoin Live</h1>
-        <div id="preco" class="text-4xl font-mono font-bold text-green-400 mb-2">$--.---</div>
-        <div id="status" class="text-[10px] text-zinc-600 uppercase">Sincronizando...</div>
+<body class="bg-[#0a0a0a] text-white font-mono flex items-center justify-center min-h-screen">
+    <div class="p-10 bg-[#111] rounded-[40px] border border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] w-full max-w-sm">
+        <div class="flex justify-between items-center mb-10">
+            <span class="text-[10px] bg-blue-500/10 text-blue-500 px-3 py-1 rounded-full border border-blue-500/20">GEMINI AI ACTIVE</span>
+            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+        </div>
+        
+        <h1 id="insight" class="text-sm text-zinc-500 mb-2 uppercase tracking-widest text-center">Iniciando Protocolo...</h1>
+        <div id="preco" class="text-5xl font-black text-center mb-10 tracking-tighter">$--.---</div>
+        
+        <div class="grid grid-cols-2 gap-4 text-[10px] text-zinc-600">
+            <div class="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800/50">
+                <p>MODO</p>
+                <p class="text-zinc-300 font-bold">SCALPER PRO</p>
+            </div>
+            <div class="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800/50">
+                <p>RISCO</p>
+                <p class="text-orange-500 font-bold">CONTROLADO</p>
+            </div>
+        </div>
     </div>
 
     <script>
-        async function atualizar() {
+        async function loop() {
             try {
-                const res = await fetch("/api");
-                const data = await res.json();
-                document.getElementById("preco").innerText = "$" + data.btc_price.toLocaleString();
-                document.getElementById("status").innerText = "Última atualização: " + new Date().toLocaleTimeString();
-            } catch (e) {
-                document.getElementById("status").innerText = "Erro de conexão";
-            }
+                const r = await fetch("/api");
+                const d = await r.json();
+                document.getElementById("preco").innerText = "$" + d.btc_price.toLocaleString();
+                document.getElementById("insight").innerText = d.insight;
+                document.getElementById("insight").className = "text-sm mb-2 uppercase tracking-widest text-center " + d.cor;
+            } catch(e) {}
         }
-        setInterval(atualizar, 10000); // Atualiza a tela a cada 10 segundos
-        atualizar();
+        setInterval(loop, 10000);
+        loop();
     </script>
 </body>
 </html>
