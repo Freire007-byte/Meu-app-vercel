@@ -1,4 +1,7 @@
 {
-  "engines": { "node": "18.x" },
-  "dependencies": { "ccxt": "latest" }
+  "name": "meu-app-vercel",
+  "version": "1.0.0",
+  "dependencies": {
+    "ccxt": "^4.2.0"
+  }
 }
