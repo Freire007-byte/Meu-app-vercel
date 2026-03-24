@@ -17,9 +17,10 @@ module.exports = async (req, res) => {
             btc_price: ticker.last,
             wallet: usdtFree.toFixed(2),
             estrategia: "SCALPER 1% AGRESSIVO",
-            ultima_atualizacao: new Date().toISOString()
+            timestamp: new Date().toISOString()
         });
     } catch (e) {
-        res.status(500).json({ error: "Erro na Gate.io: " + e.message });
+        res.status(500).json({ error: "Erro na API: " + e.message });
     }
 };
+// Update: Tue Mar 24 13:33:57 UTC 2026
