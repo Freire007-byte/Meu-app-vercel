@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
     try {
         const ticker = await exchange.fetchTicker('BTC/USDT');
         const balance = await exchange.fetchBalance();
-        const usdtFree = balance.total['USDT'] || 0;
+        const usdtFree = (balance.total && balance.total['USDT']) ? balance.total['USDT'] : 0;
 
         res.status(200).json({
             status: "ATIVO - ANALISANDO COMPRA",
@@ -20,10 +20,10 @@ module.exports = async (req, res) => {
         });
     } catch (e) {
         res.status(200).json({ 
-            status: "ERRO DE CONEXÃO",
-            btc_price: "0.00",
-            wallet: "Erro: " + e.message,
-            estrategia: "VERIFIQUE AS CHAVES API"
+            status: "ERRO DE CONEXÃO", 
+            btc_price: "0.00", 
+            wallet: "Verifique API Key",
+            estrategia: e.message 
         });
     }
 };
