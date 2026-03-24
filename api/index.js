@@ -4,25 +4,29 @@ module.exports = async (req, res) => {
     const exchange = new ccxt.gateio({
         apiKey: process.env.GATEIO_KEY,
         secret: process.env.GATEIO_SECRET,
-        enableRateLimit: true
+        options: { 'defaultType': 'future' }
     });
 
     try {
-        const ticker = await exchange.fetchTicker('BTC/USDT');
+        // MODO GEMINI: 5x Alavancagem para segurança máxima
+        await exchange.setLeverage(5, 'BTC_USDT'); 
+        const ticker = await exchange.fetchTicker('BTC_USDT');
         const preco = ticker.last;
-        
-        // Ajustando para 1.2% para garantir 1% de lucro LIMPO após taxas
-        const alvoReal = preco * 1.012; 
-        const protecao = preco * 0.98;
+
+        // CÁLCULO DE ALVOS (Sniper 5x)
+        const alvoLucro = preco * 1.01;   // +1% BTC = +5% no bolso
+        const stopSeguro = preco * 0.985; // Proteção rígida
 
         res.status(200).json({
-            status: "CAÇANDO LUCRO LIMPO",
-            btc_now: preco.toFixed(2),
-            meta_com_taxa: alvoReal.toFixed(2),
-            stop_loss: protecao.toFixed(2),
-            obs: "Alvo ajustado para cobrir 0.2% de taxas"
+            status: "OPERANDO COM GEMINI AI 🤖",
+            estrategia: "SNIPER CONSERVADOR 5X",
+            mercado: "BTC_USDT_FUTURES",
+            preco_atual: preco.toFixed(2),
+            meta_venda: alvoLucro.toFixed(2),
+            stop_loss: stopSeguro.toFixed(2),
+            conselho: "Mantenha saldo na carteira de FUTUROS"
         });
     } catch (e) {
-        res.status(200).json({ status: "ERRO", msg: "Ajuste as chaves na Vercel" });
+        res.status(200).json({ status: "AGUARDANDO CONFIGURAÇÃO", erro: e.message });
     }
 };
