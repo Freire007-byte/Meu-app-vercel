@@ -1,9 +1,11 @@
 const ccxt = require('ccxt');
 
 module.exports = async (req, res) => {
+    // Adicionando um tempo de espera (timeout) para evitar travamentos
     const exchange = new ccxt.gateio({
         apiKey: process.env.GATEIO_KEY,
         secret: process.env.GATEIO_SECRET,
+        timeout: 15000, 
         enableRateLimit: true
     });
 
@@ -19,11 +21,12 @@ module.exports = async (req, res) => {
             estrategia: "SCALPER 1% AGRESSIVO"
         });
     } catch (e) {
+        // Se der erro, ele avisa o motivo real
         res.status(200).json({ 
-            status: "ERRO DE CONEXÃO", 
-            btc_price: "0.00", 
-            wallet: "Verifique API Key",
-            estrategia: e.message 
+            status: "AGUARDANDO CONEXÃO", 
+            btc_price: "---", 
+            wallet: "Verificando...",
+            estrategia: e.message.includes('Authentication') ? "Erro nas Chaves API" : "Sinal da Gate.io oscilando"
         });
     }
 };
