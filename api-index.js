@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
     try {
         const ticker = await exchange.fetchTicker('BTC/USDT');
         const balance = await exchange.fetchBalance();
-        const usdtFree = balance.total['USDT'] || 0;
+        const usdtFree = (balance.total && balance.total['USDT']) ? balance.total['USDT'] : 0;
 
         res.status(200).json({
             status: "ATIVO - ANALISANDO COMPRA",
@@ -19,6 +19,6 @@ module.exports = async (req, res) => {
             estrategia: "SCALPER 1% AGRESSIVO"
         });
     } catch (e) {
-        res.status(500).json({ error: "Erro de Conexão: " + e.message });
+        res.status(500).json({ error: "Erro: " + e.message });
     }
 };
