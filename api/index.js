@@ -9,21 +9,20 @@ module.exports = async (req, res) => {
 
     try {
         const ticker = await exchange.fetchTicker('BTC/USDT');
-        const precoAtual = ticker.last;
+        const preco = ticker.last;
         
-        // --- LÓGICA DE SCALPER 1% ---
-        const alvoLucro = precoAtual * 1.01; 
-        const stopLoss = precoAtual * 0.98; // Proteção: vende se cair 2%
+        // Ajustando para 1.2% para garantir 1% de lucro LIMPO após taxas
+        const alvoReal = preco * 1.012; 
+        const protecao = preco * 0.98;
 
         res.status(200).json({
-            status: "ANALISANDO MERCADO",
-            btc_price: precoAtual,
-            compra_em: precoAtual.toFixed(2),
-            venda_em: alvoLucro.toFixed(2),
-            protecao: stopLoss.toFixed(2),
-            estrategia: "SCALPER 1% ATIVADO"
+            status: "CAÇANDO LUCRO LIMPO",
+            btc_now: preco.toFixed(2),
+            meta_com_taxa: alvoReal.toFixed(2),
+            stop_loss: protecao.toFixed(2),
+            obs: "Alvo ajustado para cobrir 0.2% de taxas"
         });
     } catch (e) {
-        res.status(200).json({ status: "ERRO", erro: e.message });
+        res.status(200).json({ status: "ERRO", msg: "Ajuste as chaves na Vercel" });
     }
 };
