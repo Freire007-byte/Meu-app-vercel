@@ -1,32 +1,33 @@
 const ccxt = require('ccxt');
 
 module.exports = async (req, res) => {
-    // Adicionando um tempo de espera (timeout) para evitar travamentos
     const exchange = new ccxt.gateio({
         apiKey: process.env.GATEIO_KEY,
         secret: process.env.GATEIO_SECRET,
-        timeout: 15000, 
-        enableRateLimit: true
+        enableRateLimit: true,
+        timeout: 20000
     });
 
     try {
         const ticker = await exchange.fetchTicker('BTC/USDT');
         const balance = await exchange.fetchBalance();
-        const usdtFree = (balance.total && balance.total['USDT']) ? balance.total['USDT'] : 0;
+        
+        // Garante que se não houver saldo, ele retorne 0.00 em vez de erro
+        const totalUSDT = (balance && balance.total && balance.total['USDT']) ? balance.total['USDT'] : 0;
 
         res.status(200).json({
-            status: "ATIVO - ANALISANDO COMPRA",
-            btc_price: ticker.last,
-            wallet: parseFloat(usdtFree).toFixed(2),
+            status: "ATIVO - ANALISANDO",
+            btc_price: ticker.last || 0,
+            wallet: parseFloat(totalUSDT).toFixed(2),
             estrategia: "SCALPER 1% AGRESSIVO"
         });
     } catch (e) {
-        // Se der erro, ele avisa o motivo real
-        res.status(200).json({ 
-            status: "AGUARDANDO CONEXÃO", 
-            btc_price: "---", 
-            wallet: "Verificando...",
-            estrategia: e.message.includes('Authentication') ? "Erro nas Chaves API" : "Sinal da Gate.io oscilando"
+        // Se houver erro de API, ele mostra no lugar do preço para você saber o que é
+        res.status(200).json({
+            status: "ERRO DE API",
+            btc_price: "0.00",
+            wallet: "0.00",
+            estrategia: "ERRO: " + e.message.substring(0, 20)
         });
     }
 };
