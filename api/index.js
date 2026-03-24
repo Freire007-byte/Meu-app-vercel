@@ -4,30 +4,26 @@ module.exports = async (req, res) => {
     const exchange = new ccxt.gateio({
         apiKey: process.env.GATEIO_KEY,
         secret: process.env.GATEIO_SECRET,
-        enableRateLimit: true,
-        timeout: 20000
+        enableRateLimit: true
     });
 
     try {
         const ticker = await exchange.fetchTicker('BTC/USDT');
-        const balance = await exchange.fetchBalance();
+        const precoAtual = ticker.last;
         
-        // Garante que se não houver saldo, ele retorne 0.00 em vez de erro
-        const totalUSDT = (balance && balance.total && balance.total['USDT']) ? balance.total['USDT'] : 0;
+        // --- LÓGICA DE SCALPER 1% ---
+        const alvoLucro = precoAtual * 1.01; 
+        const stopLoss = precoAtual * 0.98; // Proteção: vende se cair 2%
 
         res.status(200).json({
-            status: "ATIVO - ANALISANDO",
-            btc_price: ticker.last || 0,
-            wallet: parseFloat(totalUSDT).toFixed(2),
-            estrategia: "SCALPER 1% AGRESSIVO"
+            status: "ANALISANDO MERCADO",
+            btc_price: precoAtual,
+            compra_em: precoAtual.toFixed(2),
+            venda_em: alvoLucro.toFixed(2),
+            protecao: stopLoss.toFixed(2),
+            estrategia: "SCALPER 1% ATIVADO"
         });
     } catch (e) {
-        // Se houver erro de API, ele mostra no lugar do preço para você saber o que é
-        res.status(200).json({
-            status: "ERRO DE API",
-            btc_price: "0.00",
-            wallet: "0.00",
-            estrategia: "ERRO: " + e.message.substring(0, 20)
-        });
+        res.status(200).json({ status: "ERRO", erro: e.message });
     }
 };
