@@ -10,17 +10,20 @@ module.exports = async (req, res) => {
     try {
         const ticker = await exchange.fetchTicker('BTC/USDT');
         const balance = await exchange.fetchBalance();
-        const usdtFree = (balance.total && balance.total['USDT']) ? balance.total['USDT'] : 0;
+        const usdtFree = balance.total['USDT'] || 0;
 
         res.status(200).json({
             status: "ATIVO - ANALISANDO COMPRA",
             btc_price: ticker.last,
-            wallet: usdtFree.toFixed(2),
-            estrategia: "SCALPER 1% AGRESSIVO",
-            timestamp: new Date().toISOString()
+            wallet: parseFloat(usdtFree).toFixed(2),
+            estrategia: "SCALPER 1% AGRESSIVO"
         });
     } catch (e) {
-        res.status(500).json({ error: "Erro na API: " + e.message });
+        res.status(200).json({ 
+            status: "ERRO DE CONEXÃO",
+            btc_price: "0.00",
+            wallet: "Erro: " + e.message,
+            estrategia: "VERIFIQUE AS CHAVES API"
+        });
     }
 };
-// Update: Tue Mar 24 13:33:57 UTC 2026
